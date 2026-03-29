@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Miami Eats — Saved Spots</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --sand: #e8dcc8;
+    --terracotta: #c0674a;
+    --rust: #8b3a22;
+    --teal: #2a6b6e;
+    --dark: #1a1814;
+    --gold: #c9a84c;
+    --muted: #7a7060;
+    --white: #fefcf8;
+    --dkgray: #2c2c2c;
+  }
+
+- { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+font-family: ‘DM Sans’, sans-serif;
+background: var(–dkgray);
+color: var(–dark);
+min-height: 100vh;
+}
+
+header {
+background: #2c2c2c;
+padding: 20px 40px;
+display: flex;
+align-items: center;
+justify-content: space-between;
+position: sticky;
+top: 0;
+z-index: 100;
+border-bottom: 2px solid var(–terracotta);
+box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+}
+
+header h1 {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.7rem;
+color: var(–cream);
+letter-spacing: 0.02em;
+}
+
+header h1 span {
+color: var(–terracotta);
+font-style: italic;
+}
+
+.header-right {
+display: flex;
+gap: 10px;
+align-items: center;
+}
+
+.tab-btn {
+background: transparent;
+border: 1.5px solid #555;
+color: var(–cream);
+padding: 8px 20px;
+border-radius: 4px;
+cursor: pointer;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.85rem;
+letter-spacing: 0.06em;
+text-transform: uppercase;
+transition: all 0.2s;
+}
+.tab-btn.active, .tab-btn:hover {
+border-color: var(–terracotta);
+color: var(–terracotta);
+background: rgba(192,103,74,0.15);
+}
+
+.main-layout {
+max-width: 1400px;
+margin: 0 auto;
+padding: 32px 24px;
+}
+
+/* CONTROLS */
+.controls {
+display: flex;
+gap: 12px;
+margin-bottom: 28px;
+flex-wrap: wrap;
+align-items: center;
+}
+
+.search-box {
+flex: 1;
+min-width: 200px;
+padding: 10px 16px;
+border: 1.5px solid var(–sand);
+background: var(–white);
+border-radius: 6px;
+font-family: ‘DM Sans’, sans-serif;
+font-size: 0.9rem;
+color: var(–dark);
+outline: none;
+transition: border-color 0.2s;
+}
+.search-box:focus { border-color: var(–terracotta); }
+
+.filter-pill {
+padding: 8px 16px;
+border-radius: 20px;
+border: 1.5px solid var(–sand);
+background: var(–white);
+cursor: pointer;
+font-size: 0.82rem;
+font-weight: 500;
+color: var(–muted);
+transition: all 0.2s;
+white-space: nowrap;
+}
+.filter-pill.active {
+background: var(–terracotta);
+border-color: var(–terracotta);
+color: white;
+}
+.filter-pill:hover:not(.active) {
+border-color: var(–terracotta);
+color: var(–terracotta);
+}
+
+.stats-bar {
+display: flex;
+gap: 24px;
+margin-bottom: 24px;
+padding: 16px 20px;
+background: var(–white);
+border-radius: 8px;
+border-left: 3px solid var(–terracotta);
+}
+.stat { font-size: 0.85rem; color: var(–muted); }
+.stat strong { color: var(–dark); font-weight: 600; }
+
+/* GRID VIEW */
+.grid-view { display: block; }
+
+.category-section {
+margin-bottom: 36px;
+}
+
+.category-header {
+display: flex;
+align-items: center;
+gap: 12px;
+margin-bottom: 16px;
+padding-bottom: 10px;
+border-bottom: 1px solid var(–sand);
+}
+
+.category-icon { font-size: 1.3rem; }
+
+.category-title {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.2rem;
+color: var(–terracotta);
+}
+
+.category-count {
+background: var(–sand);
+color: var(–muted);
+padding: 2px 10px;
+border-radius: 12px;
+font-size: 0.78rem;
+font-weight: 500;
+}
+
+.cards-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 16px;
+}
+
+.card {
+background: var(–white);
+border-radius: 10px;
+padding: 18px;
+border: 1px solid var(–sand);
+transition: all 0.22s;
+cursor: pointer;
+position: relative;
+}
+.card:hover {
+transform: translateY(-2px);
+box-shadow: 0 6px 24px rgba(0,0,0,0.08);
+border-color: var(–terracotta);
+}
+
+.card-top {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 8px;
+}
+
+.card-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 1rem;
+color: var(–dark);
+line-height: 1.3;
+flex: 1;
+padding-right: 8px;
+}
+
+.visited-badge {
+width: 22px;
+height: 22px;
+border-radius: 50%;
+border: 2px solid var(–sand);
+background: transparent;
+cursor: pointer;
+flex-shrink: 0;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 0.75rem;
+transition: all 0.2s;
+}
+.visited-badge.done {
+background: var(–teal);
+border-color: var(–teal);
+color: white;
+}
+
+.card-address {
+font-size: 0.78rem;
+color: var(–muted);
+margin-bottom: 10px;
+line-height: 1.4;
+}
+
+.card-meta {
+display: flex;
+gap: 10px;
+align-items: center;
+flex-wrap: wrap;
+margin-bottom: 10px;
+}
+
+.rating-badge {
+display: flex;
+align-items: center;
+gap: 4px;
+font-size: 0.8rem;
+font-weight: 600;
+color: var(–gold);
+}
+
+.price-badge {
+font-size: 0.78rem;
+color: var(–muted);
+font-weight: 500;
+}
+
+.distance-badge {
+font-size: 0.78rem;
+color: var(–teal);
+font-weight: 500;
+background: rgba(42,107,110,0.08);
+padding: 2px 8px;
+border-radius: 10px;
+}
+
+.hours-row {
+display: flex;
+align-items: center;
+gap: 6px;
+margin-top: 8px;
+font-size: 0.78rem;
+}
+
+.open-dot {
+width: 7px;
+height: 7px;
+border-radius: 50%;
+background: #4caf7d;
+flex-shrink: 0;
+}
+.closed-dot {
+width: 7px;
+height: 7px;
+border-radius: 50%;
+background: #c0674a;
+flex-shrink: 0;
+}
+
+.hours-text { color: var(–muted); }
+
+.card-phone {
+font-size: 0.75rem;
+color: var(–muted);
+margin-top: 4px;
+}
+
+/* MODAL */
+.modal-overlay {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(26,24,20,0.7);
+z-index: 200;
+align-items: center;
+justify-content: center;
+padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+
+.modal {
+background: var(–white);
+border-radius: 14px;
+max-width: 520px;
+width: 100%;
+padding: 28px;
+max-height: 80vh;
+overflow-y: auto;
+position: relative;
+}
+
+.modal-close {
+position: absolute;
+top: 16px;
+right: 16px;
+background: none;
+border: none;
+cursor: pointer;
+font-size: 1.4rem;
+color: var(–muted);
+line-height: 1;
+}
+
+.modal-name {
+font-family: ‘Playfair Display’, serif;
+font-size: 1.5rem;
+margin-bottom: 4px;
+}
+
+.modal-category-tag {
+display: inline-block;
+background: var(–terracotta);
+color: white;
+font-size: 0.75rem;
+padding: 3px 12px;
+border-radius: 12px;
+margin-bottom: 14px;
+text-transform: uppercase;
+letter-spacing: 0.06em;
+}
+
+.modal-section-title {
+font-weight: 600;
+font-size: 0.8rem;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+color: var(–muted);
+margin: 16px 0 8px;
+}
+
+.hours-table { width: 100%; }
+.hours-table tr td { padding: 3px 0; font-size: 0.85rem; }
+.hours-table tr td:first-child { color: var(–muted); width: 110px; }
+.hours-table tr td:last-child { font-weight: 500; }
+
+.today-hours {
+background: rgba(201,168,76,0.1);
+border-left: 3px solid var(–gold);
+padding: 6px 12px;
+border-radius: 0 6px 6px 0;
+margin-bottom: 12px;
+font-size: 0.85rem;
+}
+
+.today-hours strong { color: var(–dark); }
+
+.modal-map-link {
+display: inline-flex;
+align-items: center;
+gap: 6px;
+margin-top: 16px;
+padding: 10px 20px;
+background: var(–teal);
+color: white;
+text-decoration: none;
+border-radius: 6px;
+font-size: 0.85rem;
+font-weight: 500;
+transition: background 0.2s;
+}
+.modal-map-link:hover { background: #1e5052; }
+
+.empty-state {
+text-align: center;
+padding: 60px 20px;
+color: var(–muted);
+font-style: italic;
+font-family: ‘Playfair Display’, serif;
+font-size: 1.1rem;
+}
+
+/* MAP VIEW */
+#map-view { display: none; }
+#map-view.active { display: block; }
+.grid-view.hidden { display: none; }
+
+#map {
+width: 100%;
+height: 600px;
+border-radius: 10px;
+border: 1px solid var(–sand);
+}
+
+.map-legend {
+display: flex;
+flex-wrap: wrap;
+gap: 12px;
+margin-top: 16px;
+padding: 16px;
+background: var(–white);
+border-radius: 8px;
+border: 1px solid var(–sand);
+}
+
+.legend-item {
+display: flex;
+align-items: center;
+gap: 6px;
+font-size: 0.8rem;
+color: var(–muted);
+}
+
+.legend-dot {
+width: 12px;
+height: 12px;
+border-radius: 50%;
+flex-shrink: 0;
+}
+
+/* BISCAYNE PARK ref */
+.biscayne-note {
+font-size: 0.82rem;
+color: var(–muted);
+margin-top: 10px;
+font-style: italic;
+}
+
+/* DAY SELECTOR */
+.day-selector {
+display: flex;
+gap: 6px;
+align-items: center;
+margin-bottom: 20px;
+flex-wrap: wrap;
+}
+.day-label {
+font-size: 0.78rem;
+font-weight: 600;
+text-transform: uppercase;
+letter-spacing: 0.08em;
+color: var(–muted);
+margin-right: 4px;
+}
+.day-btn {
+padding: 6px 14px;
+border-radius: 20px;
+border: 1.5px solid var(–sand);
+background: var(–white);
+cursor: pointer;
+font-size: 0.82rem;
+font-weight: 600;
+color: var(–muted);
+transition: all 0.18s;
+font-family: ‘DM Sans’, sans-serif;
+}
+.day-btn:hover:not(.active) { border-color: var(–gold); color: var(–dark); }
+.day-btn.active {
+background: var(–dark);
+border-color: var(–dark);
+color: var(–cream);
+}
+
+/* HOURS WARNING on cards */
+.hours-warning {
+display: inline-flex;
+align-items: center;
+gap: 4px;
+font-size: 0.74rem;
+color: #b85c20;
+background: rgba(192,103,74,0.1);
+padding: 2px 8px;
+border-radius: 10px;
+margin-top: 4px;
+font-weight: 500;
+}
+.closed-day-banner {
+background: rgba(192,103,74,0.08);
+border: 1px solid rgba(192,103,74,0.25);
+border-radius: 8px;
+padding: 8px 12px;
+font-size: 0.78rem;
+color: #8b3a22;
+margin-top: 6px;
+font-weight: 500;
+}
+
+/* Modal hours table highlight */
+.hours-table tr.trip-day td { background: rgba(201,168,76,0.1); font-weight: 600; }
+.hours-table tr.trip-day td:first-child::after { content: ’ ✈’; }
+
+/* Trip hours summary in modal */
+.trip-hours-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 6px;
+margin-top: 4px;
+}
+.trip-hour-cell {
+background: var(–cream);
+border-radius: 6px;
+padding: 6px 10px;
+font-size: 0.8rem;
+}
+.trip-hour-cell .day-name { font-weight: 600; color: var(–dark); font-size: 0.75rem; }
+.trip-hour-cell .day-time { color: var(–muted); margin-top: 1px; }
+.trip-hour-cell.closed-cell { opacity: 0.5; }
+.trip-hour-cell.closed-cell .day-time { color: var(–terracotta); }
+.trip-hour-cell.diff-cell { border-left: 3px solid var(–gold); }
+
+@media (max-width: 600px) {
+header { padding: 16px 18px; }
+header h1 { font-size: 1.2rem; }
+.main-layout { padding: 16px 12px; }
+.cards-grid { grid-template-columns: 1fr; }
+.controls { gap: 8px; }
+}
+</style>
+
+</head>
+<body>
+
+<header>
+  <h1>Miami <span>Eats</span></h1>
+  <div class="header-right">
+    <button class="tab-btn active" id="btn-list" onclick="showView('list')">List</button>
+    <button class="tab-btn" id="btn-map" onclick="showView('map')">Map</button>
+  </div>
+</header>
+
+<div class="main-layout">
+
+  <div class="controls">
+    <input class="search-box" type="text" id="search" placeholder="Search spots…" oninput="filterCards()">
+    <button class="filter-pill active" onclick="setFilter('all', this)">All</button>
+    <button class="filter-pill" onclick="setFilter('Cuban & Latin', this)">🇨🇺 Cuban & Latin</button>
+    <button class="filter-pill" onclick="setFilter('Pizza', this)">🍕 Pizza</button>
+    <button class="filter-pill" onclick="setFilter('Bakery & Pastry', this)">🥐 Bakery</button>
+    <button class="filter-pill" onclick="setFilter('Coffee', this)">☕ Coffee</button>
+    <button class="filter-pill" onclick="setFilter('Bars & Cocktails', this)">🍹 Bars</button>
+    <button class="filter-pill" onclick="setFilter('Seafood & Grill', this)">🦐 Seafood</button>
+    <button class="filter-pill" onclick="setFilter('Markets & Specialty', this)">🧺 Markets</button>
+    <button class="filter-pill" onclick="setFilter('visited', this)">✅ Visited</button>
+  </div>
+
+  <div class="day-selector">
+    <span class="day-label">📅 Trip day:</span>
+    <button class="day-btn active" onclick="setDay('all', this)">All days</button>
+    <button class="day-btn" onclick="setDay('Wed', this)">Wed</button>
+    <button class="day-btn" onclick="setDay('Thu', this)">Thu</button>
+    <button class="day-btn" onclick="setDay('Fri', this)">Fri</button>
+    <button class="day-btn" onclick="setDay('Sat', this)">Sat</button>
+    <button class="day-btn" onclick="setDay('Sun', this)">Sun</button>
+  </div>
+
+  <div class="day-selector" style="margin-bottom:12px">
+    <span class="day-label">↕ Sort by:</span>
+    <button class="day-btn active" id="sort-rating" onclick="setSort('rating', this)">⭐ Rating</button>
+    <button class="day-btn" id="sort-distance" onclick="setSort('distance', this)">📍 Distance</button>
+    <button class="day-btn" id="sort-price-asc" onclick="setSort('price-asc', this)">$ Price ↑</button>
+    <button class="day-btn" id="sort-price-desc" onclick="setSort('price-desc', this)">$ Price ↓</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat">Total <strong id="stat-total">37</strong> spots</div>
+    <div class="stat">Showing <strong id="stat-showing">37</strong></div>
+    <div class="stat">Visited <strong id="stat-visited">0</strong></div>
+    <div class="stat">📍 Distance from <strong>Biscayne Park</strong></div>
+  </div>
+
+  <div class="grid-view" id="list-view"></div>
+
+  <div id="map-view">
+    <div id="map"></div>
+    <div class="biscayne-note">📍 Blue marker = Biscayne Park reference point (NE Miami)</div>
+    <div class="map-legend" id="map-legend"></div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    <div id="modal-content"></div>
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+const BISCAYNE_PARK = { lat: 25.8757, lng: -80.1807 };
+
+const CATEGORIES = {
+  "Cuban & Latin": { icon: "🇨🇺", color: "#c0674a" },
+  "Pizza": { icon: "🍕", color: "#8b3a22" },
+  "Bakery & Pastry": { icon: "🥐", color: "#c9a84c" },
+  "Coffee": { icon: "☕", color: "#6b4c30" },
+  "Bars & Cocktails": { icon: "🍹", color: "#2a6b6e" },
+  "Seafood & Grill": { icon: "🦐", color: "#1e5052" },
+  "Markets & Specialty": { icon: "🧺", color: "#5a7a3a" },
+};
+
+const PLACES = [
+  { name:"Cafe La Trova", cat:"Bars & Cocktails", address:"971 SW 8th St, Miami, FL 33130", lat:25.7661, lng:-80.2105, rating:4.5, price:"$$", phone:"+1 786-615-4379", hours:["Mon: 4:00 PM – 12:00 AM","Tue: 4:00 PM – 12:00 AM","Wed: 4:00 PM – 12:00 AM","Thu: 4:00 PM – 12:00 AM","Fri: 4:00 PM – 2:00 AM","Sat: 4:00 PM – 2:00 AM","Sun: 4:00 PM – 12:00 AM"], place_id:"ChIJZzgtHTW32YgR-k9p8IqD5m0" },
+  { name:"Versailles Restaurant", cat:"Cuban & Latin", address:"3555 SW 8th St, Miami, FL 33135", lat:25.7650, lng:-80.2528, rating:4.5, price:"$$", phone:"+1 305-444-0240", hours:["Mon: 8:00 AM – 12:00 AM","Tue: 8:00 AM – 12:00 AM","Wed: 8:00 AM – 12:00 AM","Thu: 8:00 AM – 12:00 AM","Fri: 8:00 AM – 1:00 AM","Sat: 8:00 AM – 1:00 AM","Sun: 9:00 AM – 12:00 AM"], place_id:"ChIJt9yvFgu32YgRrk-vKGEQB6g" },
+  { name:"La Sandwicherie North Beach", cat:"Cuban & Latin", address:"7349 Collins Ave, Miami Beach, FL 33141", lat:25.8593, lng:-80.1208, rating:4.6, price:"$", phone:"+1 305-763-8278", hours:["Mon–Sun: 8:00 AM – 5:00 AM"], place_id:"ChIJt3MJM3Cz2YgRNNpMmpThfgk" },
+  { name:"El Palacio de los Jugos", cat:"Cuban & Latin", address:"5721 W Flagler St, Miami, FL 33144", lat:25.7711, lng:-80.2885, rating:4.3, price:"$", phone:"+1 786-313-3052", hours:["Mon–Sun: 6:00 AM – 9:00 PM"], place_id:"ChIJY3jSPM652YgRsIyN6-vjA5k" },
+  { name:"Broken Shaker", cat:"Bars & Cocktails", address:"2727 Indian Creek Dr, Miami Beach, FL 33140", lat:25.8046, lng:-80.1264, rating:4.5, price:"$$", phone:null, hours:["Mon–Thu: 5:00 PM – 12:00 AM","Fri: 5:00 PM – 1:00 AM","Sat: 5:00 PM – 1:00 AM","Sun: 5:00 PM – 12:00 AM"], place_id:"ChIJA8OW5mOz2YgRkdVtPmVkysI" },
+  { name:"Panther Coffee Lab & Roastery", cat:"Coffee", address:"5934 NW 2nd Ave, Miami, FL 33127", lat:25.8300, lng:-80.2005, rating:4.2, price:"$$", phone:"+1 305-677-3952", hours:["Mon–Sun: 7:00 AM – 5:00 PM"], place_id:"ChIJIU21RGix2YgR0Vr1OcGQVUE" },
+  { name:"Los Fuegos by Francis Mallmann", cat:"Seafood & Grill", address:"3201 Collins Ave, Miami Beach, FL 33140", lat:25.8074, lng:-80.1234, rating:4.3, price:"$$$$", phone:"+1 786-655-5600", hours:["Mon–Thu: 7:00 AM – 4:00 PM, 6:30 – 10:30 PM","Fri–Sat: 7:00 AM – 4:00 PM, 6:30 – 11:00 PM","Sun: 7:00 AM – 4:00 PM, 6:30 – 10:30 PM"], place_id:"ChIJpTbo_Gaz2YgRJXEN4WP4uNQ" },
+  { name:"Miami Slice", cat:"Pizza", address:"1335 NE Miami Ct, Miami, FL 33132", lat:25.7877, lng:-80.1930, rating:4.2, price:"$$", phone:"+1 305-217-5423", hours:["Mon: 5:00 – 11:00 PM","Tue: Closed","Wed–Sun: 5:00 – 11:00 PM"], place_id:"ChIJP6qutzix2YgRPt9wrb0gO9M" },
+  { name:"Mister O1 Pizza — Wynwood", cat:"Pizza", address:"2315 N Miami Ave, Miami, FL 33127", lat:25.7992, lng:-80.1947, rating:4.9, price:"$$", phone:"+1 786-882-8183", hours:["Mon–Thu: 11:30 AM – 10:00 PM","Fri: 11:30 AM – 11:00 PM","Sat: 12:00 – 11:00 PM","Sun: 12:00 – 10:00 PM"], place_id:"ChIJcyAwPKy22YgRDQNU5lP6UVI" },
+  { name:"Sanguich", cat:"Cuban & Latin", address:"2057 SW 8th St, Miami, FL 33135", lat:25.7658, lng:-80.2286, rating:4.6, price:"$$", phone:"+1 786-829-1381", hours:["Mon–Sun: 10:00 AM – 6:00 PM"], place_id:"ChIJhw4bDvq22YgRt1rD2Am4AxY" },
+  { name:"ViceVersa Miami", cat:"Bars & Cocktails", address:"398 NE 5th St, Miami, FL 33132", lat:25.7789, lng:-80.1891, rating:4.6, price:"$$", phone:null, hours:["Mon–Sun: 5:00 PM – 12:00 AM"], place_id:"ChIJ_x2nF4e32YgRqFyJn1Tfd3U" },
+  { name:"Sesame Bakery", cat:"Bakery & Pastry", address:"2211 Sole Mia Sq Ln, North Miami, FL 33181", lat:25.9101, lng:-80.1523, rating:4.5, price:"$$", phone:"+1 786-629-9606", hours:["Mon–Sun: 8:00 AM – 5:00 PM"], place_id:"ChIJX6h7jyyt2YgRUAM14JPW-Os" },
+  { name:"Little Havana Restaurant", cat:"Cuban & Latin", address:"1442 SW 8th St, Miami, FL 33135", lat:25.7656, lng:-80.2192, rating:4.8, price:"$$", phone:"+1 786-518-2196", hours:["Mon–Thu: 11:00 AM – 11:00 PM","Fri–Sat: 11:00 AM – 12:00 AM","Sun: 11:00 AM – 11:00 PM"], place_id:"ChIJCWCYxvC22YgRNWU2W-fZgn4" },
+  { name:"{petite} maman", cat:"Coffee", address:"140 NE 39th St #136, Miami, FL 33137", lat:25.8123, lng:-80.1926, rating:4.9, price:"$$", phone:"+1 786-580-5938", hours:["Mon–Sun: 8:00 AM – 7:00 PM"], place_id:"ChIJadaygN6x2YgRsCcueNDVNxI" },
+  { name:"Studio 24 Artful Coffee", cat:"Coffee", address:"2700A Biscayne Blvd, Miami, FL 33137", lat:25.8030, lng:-80.1895, rating:4.7, price:"$$", phone:"+1 645-240-8228", hours:["Mon–Sun: 7:00 AM – 6:00 PM"], place_id:"ChIJY5dR0dG32YgRx0qStVgpk_c" },
+  { name:"Fiore Caffe Miami", cat:"Coffee", address:"228 SE 1st St, Miami, FL 33131", lat:25.7733, lng:-80.1895, rating:4.8, price:"$$", phone:"+1 786-558-5152", hours:["Mon–Sun: 8:00 AM – 4:00 PM"], place_id:"ChIJbboSIGi32YgRmFVvBCOS50M" },
+  { name:"Crazy About You", cat:"Bars & Cocktails", address:"1155 Brickell Bay Dr, Miami, FL 33131", lat:25.7620, lng:-80.1890, rating:4.8, price:"$$", phone:"+1 305-377-4442", hours:["Mon–Thu: 11:30 AM – 11:00 PM","Fri: 11:00 AM – 12:00 AM","Sat: 10:00 AM – 12:00 AM","Sun: 10:00 AM – 11:00 PM"], place_id:"ChIJ56WSjYG22YgRV8CLvPG3z9E" },
+  { name:"La Birra Bar — North Miami Beach", cat:"Seafood & Grill", address:"14831 Biscayne Blvd, North Miami Beach, FL 33181", lat:25.9128, lng:-80.1557, rating:4.9, price:"$$", phone:"+1 305-432-8027", hours:["Mon–Thu: 11:00 AM – 12:00 AM","Fri: 12:00 PM – 12:00 AM","Sat: 11:30 AM – 1:00 AM","Sun: 11:30 AM – 12:00 AM"], place_id:"ChIJISlLiM6t2YgReRzbdabC0W0" },
+  { name:"CVI.CHE 105", cat:"Cuban & Latin", address:"105 NE 3rd Ave, Miami, FL 33132", lat:25.7755, lng:-80.1884, rating:4.9, price:"$$", phone:"+1 305-577-3454", hours:["Mon–Thu: 12:00 – 10:30 PM","Fri–Sat: 12:00 – 11:30 PM","Sun: 12:00 – 10:30 PM"], place_id:"ChIJlz72E5622YgRLXWCKTEFM_M" },
+  { name:"Flour & Weirdoughs", cat:"Bakery & Pastry", address:"19 Harbor Dr, Key Biscayne, FL 33149", lat:25.6996, lng:-80.1628, rating:4.6, price:"$", phone:"+1 305-361-9000", hours:["Mon: Closed","Tue–Sun: 8:00 AM – 2:00 PM"], place_id:"ChIJY_x3n0HL2YgRnLH6dEifT8k" },
+  { name:"NARBONA Key Biscayne", cat:"Seafood & Grill", address:"260 Crandon Blvd #35, Key Biscayne, FL 33149", lat:25.6968, lng:-80.1642, rating:4.8, price:"$$", phone:"+1 754-239-5647", hours:["Mon–Thu: 11:00 AM – 10:00 PM","Fri–Sat: 11:00 AM – 11:00 PM","Sun: 11:00 AM – 10:00 PM"], place_id:"ChIJSS87-tHL2YgRRZf1fcd3o48" },
+  { name:"Madruga Bakery", cat:"Bakery & Pastry", address:"1430 S Dixie Hwy, Coral Gables, FL 33146", lat:25.7092, lng:-80.2824, rating:4.5, price:"$$", phone:"+1 305-262-6130", hours:["Mon–Tue: Closed","Wed–Fri: 8:00 AM – 3:00 PM","Sat: 8:00 AM – 2:00 PM","Sun: 8:00 AM – 2:00 PM"], place_id:"ChIJaS-BBvzH2YgRCv-EySSucHY" },
+  { name:"Piononos", cat:"Bakery & Pastry", address:"328 Crandon Blvd #217, Key Biscayne, FL 33149", lat:25.6954, lng:-80.1639, rating:4.5, price:"$$", phone:"+1 786-488-6770", hours:["Mon–Sun: 10:00 AM – 5:00 PM"], place_id:"ChIJ-2a_aW3K2YgRkw6HZIde5qI" },
+  { name:"El Rey De Las Fritas", cat:"Cuban & Latin", address:"1821 SW 8th St, Miami, FL 33135", lat:25.7658, lng:-80.2252, rating:4.5, price:"$", phone:"+1 305-644-6054", hours:["Mon–Sun: 8:00 AM – 10:30 PM"], place_id:"ChIJuYnp5vu22YgRqjNB5POHQPg" },
+  { name:"Fratesi's Pizza", cat:"Pizza", address:"69 E Flagler St, Miami, FL 33131", lat:25.7743, lng:-80.1923, rating:4.4, price:"$$", phone:"+1 305-456-1155", hours:["Mon–Wed: Closed","Thu–Fri: 5:00 – 10:00 PM","Sat: 1:00 – 10:00 PM","Sun: 1:00 – 9:00 PM"], place_id:"ChIJATGBFiSx2YgR9TTTvDT-1tM" },
+  { name:"Joe's Stone Crab", cat:"Seafood & Grill", address:"11 Washington Ave, Miami Beach, FL 33139", lat:25.7691, lng:-80.1350, rating:4.5, price:"$$$", phone:"+1 305-673-0365", hours:["Mon–Tue: 5:00 – 10:00 PM","Wed–Thu: 11:30 AM – 2:30 PM, 5:00 – 10:00 PM","Fri–Sat: 11:30 AM – 2:30 PM, 5:00 – 11:00 PM","Sun: 11:30 AM – 2:30 PM, 5:00 – 10:00 PM"], place_id:"ChIJgYZ4DvG02YgR6zxax8FTfHo" },
+  { name:"True Loaf Bakery", cat:"Bakery & Pastry", address:"1894 Bay Rd, Miami Beach, FL 33139", lat:25.7947, lng:-80.1439, rating:4.3, price:"$$$", phone:"+1 786-894-6602", hours:["Mon–Sun: 7:00 AM – 5:30 PM"], place_id:"ChIJkTcSCX602YgRbxou7Gz96kU" },
+  { name:"Caracas Bakery Biscayne", cat:"Bakery & Pastry", address:"7283 Biscayne Blvd, Miami, FL 33138", lat:25.8421, lng:-80.1841, rating:4.2, price:"$$", phone:"+1 786-901-1557", hours:["Mon–Fri: 8:00 AM – 6:00 PM","Sat: 8:00 AM – 4:00 PM","Sun: 8:00 AM – 3:00 PM"], place_id:"ChIJj7m6bXuz2YgRlPUNfR6tXxg" },
+  { name:"The Salty Donut", cat:"Bakery & Pastry", address:"50 NW 24th St, Miami, FL 33127", lat:25.7994, lng:-80.1958, rating:4.6, price:"$$", phone:"+1 305-639-8501", hours:["Mon–Thu: 7:00 AM – 7:00 PM","Fri–Sat: 7:00 AM – 10:00 PM","Sun: 7:00 AM – 7:00 PM"], place_id:"ChIJxZkvTKy22YgRC7XlVzm6USw" },
+  { name:"Façade Bakery", cat:"Bakery & Pastry", address:"271 Giralda Ave, Coral Gables, FL 33131", lat:25.7513, lng:-80.2602, rating:4.1, price:"$$", phone:null, hours:["Mon–Sun: 8:00 AM – 3:00 PM"], place_id:"ChIJ2RdbAza32YgRha9aPeEuQEk" },
+  { name:"Naughty Coffee", cat:"Coffee", address:"101 NE 2nd Ave, Miami, FL 33132", lat:25.7754, lng:-80.1901, rating:4.8, price:"$$", phone:"+1 347-283-5609", hours:["Mon–Sun: 7:00 AM – 7:00 PM"], place_id:"ChIJC0Wl_qe32YgRsBh8j3fDJ10" },
+  { name:"Coconut Grove Farmer's Market", cat:"Markets & Specialty", address:"3300 Grand Ave, Miami, FL 33133", lat:25.7277, lng:-80.2469, rating:4.5, price:"$$", phone:"+1 305-238-7747", hours:["Mon–Fri: Closed","Sat: 10:00 AM – 6:30 PM","Sun: Closed"], place_id:"ChIJhdGB-sS32YgRs2DhmzEjA5w" },
+  { name:"Mar y Fuego", cat:"Seafood & Grill", address:"17026 SW 177th Ave, Miami, FL 33187", lat:25.6078, lng:-80.4797, rating:4.8, price:"$$", phone:"+1 786-862-0228", hours:["Mon–Fri: Closed","Sat–Sun: 9:00 AM – 10:00 PM"], place_id:"ChIJ0X_SLyLp2YgRIbpHfgiK3uI" },
+  { name:"Mister O1 Pizza — Bay Harbor", cat:"Pizza", address:"1065 95th St, Bay Harbor Islands, FL 33154", lat:25.8860, lng:-80.1305, rating:4.9, price:"$$", phone:"+1 786-886-3178", hours:["Mon–Thu: 11:30 AM – 10:00 PM","Fri–Sat: 11:30 AM – 11:00 PM","Sun: 11:30 AM – 10:00 PM"], place_id:"ChIJN7TKExCz2YgRA09BHz_XNFw" },
+  { name:"El Toro Loco Ranch", cat:"Seafood & Grill", address:"16901 SW 177th Ave, Miami, FL 33187", lat:25.6081, lng:-80.4781, rating:4.9, price:"$$", phone:"+1 305-964-5635", hours:["Mon–Thu: Closed","Fri–Sun: 11:00 AM – 9:00 PM"], place_id:"ChIJyzWH0-7p2YgR0yf5j5DON7k" },
+  { name:"Robert Is Here Fruit Stand", cat:"Markets & Specialty", address:"19200 SW 344th St, Homestead, FL 33034", lat:25.4474, lng:-80.5019, rating:4.6, price:"$$", phone:"+1 305-246-1592", hours:["Mon–Fri: 9:00 AM – 6:00 PM","Sat–Sun: 8:00 AM – 6:00 PM"], place_id:"ChIJfRsZUyrh2YgRGW3Q2YUNHiE" },
+  { name:"Tinta Y Cafe — Miami Shores", cat:"Coffee", address:"9840 NE 2nd Ave, Miami Shores, FL 33138", lat:25.8659, lng:-80.1937, rating:4.1, price:"$$", phone:"+1 305-456-0137", hours:["Mon–Fri: 8:00 AM – 5:00 PM","Sat: 8:00 AM – 4:00 PM","Sun: 8:00 AM – 4:00 PM"], place_id:"ChIJJzUO8jGx2YgRtFxooJmGdto" },
+];
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let currentFilter = 'all';
+let visited = JSON.parse(localStorage.getItem('miami_visited') || '{}');
+let currentView = 'list';
+let selectedDay = 'all';
+let currentSort = 'rating';
+
+const TRIP_DAYS = ['Wed','Thu','Fri','Sat','Sun'];
+const PRICE_ORDER = { '$': 1, '$$': 2, '$$$': 3, '$$$$': 4 };
+
+function setSort(sort, btn) {
+  currentSort = sort;
+  document.querySelectorAll('#sort-rating, #sort-distance, #sort-price-asc, #sort-price-desc')
+    .forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+function sortItems(items) {
+  return [...items].sort((a, b) => {
+    if (currentSort === 'rating') return b.rating - a.rating;
+    if (currentSort === 'distance') {
+      return haversine(BISCAYNE_PARK.lat, BISCAYNE_PARK.lng, a.lat, a.lng)
+           - haversine(BISCAYNE_PARK.lat, BISCAYNE_PARK.lng, b.lat, b.lng);
+    }
+    if (currentSort === 'price-asc') return (PRICE_ORDER[a.price] || 2) - (PRICE_ORDER[b.price] || 2);
+    if (currentSort === 'price-desc') return (PRICE_ORDER[b.price] || 2) - (PRICE_ORDER[a.price] || 2);
+    return 0;
+  });
+}
+function setDay(day, btn) {
+  selectedDay = day;
+  document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderList();
+}
+
+// ─── DISTANCE ───────────────────────────────────────────────────────────────
+function haversine(lat1, lng1, lat2, lng2) {
+  const R = 3958.8; // miles
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLng = (lng2 - lng1) * Math.PI / 180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// ─── TODAY'S HOURS ────────────────────────────────────────────────────────────
+const DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function todayKey() { return DAYS[new Date().getDay()]; }
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function getFilteredPlaces() {
+  const q = document.getElementById('search').value.toLowerCase();
+  return PLACES.filter(p => {
+    const matchCat = currentFilter === 'all' ? true :
+                     currentFilter === 'visited' ? !!visited[p.name] :
+                     p.cat === currentFilter;
+    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.address.toLowerCase().includes(q) || p.cat.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+}
+
+function renderList() {
+  const filtered = getFilteredPlaces();
+  const container = document.getElementById('list-view');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state">No spots match your search…</div>';
+    updateStats(filtered);
+    return;
+  }
+
+  // Group by category
+  const grouped = {};
+  filtered.forEach(p => {
+    if (!grouped[p.cat]) grouped[p.cat] = [];
+    grouped[p.cat].push(p);
+  });
+
+  let html = '';
+  const catOrder = Object.keys(CATEGORIES);
+  catOrder.forEach(cat => {
+    if (!grouped[cat]) return;
+    const info = CATEGORIES[cat];
+    const items = sortItems(grouped[cat]);
+    html += `
+      <div class="category-section">
+        <div class="category-header">
+          <span class="category-icon">${info.icon}</span>
+          <span class="category-title">${cat}</span>
+          <span class="category-count">${items.length}</span>
+        </div>
+        <div class="cards-grid">
+          ${items.map(p => cardHTML(p)).join('')}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+  updateStats(filtered);
+}
+
+function getHoursForDay(hours, day) {
+  if (!hours) return 'Unknown';
+  const DORD = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const cur = DORD.indexOf(day);
+  for (const h of hours) {
+    if (h.includes('Mon–Sun') || h.includes('Mon-Sun')) return h.replace(/Mon[–-]Sun:\s*/, '');
+    if (h.startsWith(day + ':')) return h.split(': ').slice(1).join(': ').trim();
+    const rangeMatch = h.match(/^([A-Z][a-z]+)[–-]([A-Z][a-z]+):\s*(.+)/);
+    if (rangeMatch) {
+      const s = DORD.indexOf(rangeMatch[1]), e = DORD.indexOf(rangeMatch[2]);
+      if (s !== -1 && e !== -1 && cur >= s && cur <= e) return rangeMatch[3];
+    }
+  }
+  return 'Closed';
+}
+
+// Returns true if hours differ across trip days (ignoring all-same and all-closed)
+function hasDiffHours(hours) {
+  const dayHours = TRIP_DAYS.map(d => getHoursForDay(hours, d));
+  const open = dayHours.filter(h => h !== 'Closed');
+  if (open.length === 0) return false;
+  return new Set(open).size > 1;
+}
+
+function cardHTML(p) {
+  const dist = haversine(BISCAYNE_PARK.lat, BISCAYNE_PARK.lng, p.lat, p.lng).toFixed(1);
+  const isVisited = visited[p.name];
+
+  // Determine what hours to show on card
+  let displayDay = selectedDay === 'all' ? null : selectedDay;
+  let hoursLine = '';
+  let warningLine = '';
+
+  if (displayDay) {
+    const h = getHoursForDay(p.hours, displayDay);
+    const isClosed = h === 'Closed';
+    hoursLine = `
+      <div class="hours-row" style="margin-top:8px">
+        <div class="${isClosed ? 'closed-dot' : 'open-dot'}"></div>
+        <span class="hours-text">${displayDay}: <strong>${h}</strong></span>
+      </div>`;
+    if (isClosed) {
+      warningLine = `<div class="closed-day-banner">⚠️ Closed on ${displayDay}</div>`;
+    }
+  } else {
+    // Show trip-day overview: compact inline
+    const tripSummary = TRIP_DAYS.map(d => {
+      const h = getHoursForDay(p.hours, d);
+      return h === 'Closed' ? `<span style="color:var(--terracotta)">${d}:✕</span>` : `<span>${d}:✓</span>`;
+    }).join(' ');
+
+    const closedDays = TRIP_DAYS.filter(d => getHoursForDay(p.hours, d) === 'Closed');
+    const diffHours = hasDiffHours(p.hours);
+
+    hoursLine = `<div style="font-size:0.75rem;color:var(--muted);margin-top:8px;display:flex;gap:8px;flex-wrap:wrap">${tripSummary}</div>`;
+
+    if (closedDays.length > 0) {
+      warningLine = `<div class="hours-warning">⚠️ Closed: ${closedDays.join(', ')}</div>`;
+    } else if (diffHours) {
+      warningLine = `<div class="hours-warning">🕐 Hours vary by day</div>`;
+    }
+  }
+
+  return `
+    <div class="card" onclick="openModal('${p.name.replace(/'/g,"\\'")}')">
+      <div class="card-top">
+        <div class="card-name">${p.name}</div>
+        <div class="visited-badge ${isVisited ? 'done' : ''}" 
+             onclick="event.stopPropagation(); toggleVisited('${p.name.replace(/'/g,"\\'")}', this)"
+             title="${isVisited ? 'Mark unvisited' : 'Mark visited'}">
+          ${isVisited ? '✓' : ''}
+        </div>
+      </div>
+      <div class="card-address">${p.address}</div>
+      <div class="card-meta">
+        <span class="rating-badge">★ ${p.rating}</span>
+        <span class="price-badge">${p.price || '—'}</span>
+        <span class="distance-badge">${dist} mi away</span>
+      </div>
+      ${hoursLine}
+      ${warningLine}
+      ${p.phone ? `<div class="card-phone" style="margin-top:4px">${p.phone}</div>` : ''}
+    </div>
+  `;
+}
+
+function getTodayHours(hours) {
+  if (!hours) return 'Unknown';
+  const today = todayKey();
+  for (const h of hours) {
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    for (const d of days) {
+      if (h.startsWith(d + ':') || h.startsWith(d + '–') || h.startsWith(d + '-') ||
+          (h.includes('Mon–Sun') || h.includes('Mon-Sun'))) {
+        if (h.includes('Mon–Sun') || h.includes('Mon-Sun')) {
+          return h.replace(/Mon[–-]Sun:\s*/, '');
+        }
+        if (h.startsWith(today + ':')) return h.replace(today + ': ', '');
+        // check ranges
+        const rangeMatch = h.match(/^([A-Z][a-z]+)[–-]([A-Z][a-z]+):\s*(.+)/);
+        if (rangeMatch) {
+          const start = days.indexOf(rangeMatch[1]);
+          const end = days.indexOf(rangeMatch[2]);
+          const cur = days.indexOf(today);
+          if (start !== -1 && end !== -1 && cur >= start && cur <= end) return rangeMatch[3];
+        }
+      }
+    }
+  }
+  // fallback: look for today's name directly
+  const todayFull = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][new Date().getDay()];
+  for (const h of hours) {
+    if (h.startsWith(today) || h.startsWith(todayFull)) {
+      const parts = h.split(': ');
+      return parts.length > 1 ? parts.slice(1).join(': ') : h;
+    }
+  }
+  return 'See hours';
+}
+
+function updateStats(filtered) {
+  document.getElementById('stat-total').textContent = PLACES.length;
+  document.getElementById('stat-showing').textContent = filtered.length;
+  document.getElementById('stat-visited').textContent = Object.keys(visited).filter(k=>visited[k]).length;
+}
+
+function toggleVisited(name, el) {
+  visited[name] = !visited[name];
+  localStorage.setItem('miami_visited', JSON.stringify(visited));
+  el.classList.toggle('done', visited[name]);
+  el.textContent = visited[name] ? '✓' : '';
+  updateStats(getFilteredPlaces());
+  if (currentFilter === 'visited') renderList();
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterCards();
+}
+
+function filterCards() {
+  renderList();
+}
+
+// ─── MODAL ───────────────────────────────────────────────────────────────────
+function openModal(name) {
+  const p = PLACES.find(x => x.name === name);
+  if (!p) return;
+  const dist = haversine(BISCAYNE_PARK.lat, BISCAYNE_PARK.lng, p.lat, p.lng).toFixed(1);
+  const catInfo = CATEGORIES[p.cat];
+
+  // Trip days grid
+  const tripDayHours = TRIP_DAYS.map(d => {
+    const h = getHoursForDay(p.hours, d);
+    const isClosed = h === 'Closed';
+    // detect if this day differs from baseline (Wed)
+    const wedH = getHoursForDay(p.hours, 'Wed');
+    const isDiff = !isClosed && h !== wedH && d !== 'Wed';
+    return `
+      <div class="trip-hour-cell ${isClosed ? 'closed-cell' : ''} ${isDiff ? 'diff-cell' : ''}">
+        <div class="day-name">${d}</div>
+        <div class="day-time">${h}</div>
+      </div>`;
+  }).join('');
+
+  const hoursRows = p.hours.map(h => `<tr><td>${h.split(':')[0]}</td><td>${h.split(':').slice(1).join(':').trim()}</td></tr>`).join('');
+
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-name">${p.name}</div>
+    <span class="modal-category-tag">${catInfo.icon} ${p.cat}</span>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:4px;">📍 ${p.address}</p>
+    <p style="font-size:0.85rem;color:var(--teal);margin-bottom:4px;">📏 ${dist} miles from Biscayne Park</p>
+    ${p.phone ? `<p style="font-size:0.85rem;color:var(--muted);margin-bottom:4px">📞 ${p.phone}</p>` : ''}
+
+    <div class="modal-section-title">✈️ Trip Hours (Wed – Sun)</div>
+    <div class="trip-hours-grid">${tripDayHours}</div>
+    <p style="font-size:0.72rem;color:var(--muted);margin-top:6px;">🟡 Gold left border = hours differ from Wednesday</p>
+
+    <div class="modal-section-title">Full Weekly Hours</div>
+    <table class="hours-table">${hoursRows}</table>
+
+    <div style="margin-top:16px">
+      <a class="modal-map-link" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(p.name + ' ' + p.address)}" target="_blank">
+        🗺 Open in Google Maps
+      </a>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+// ─── MAP ─────────────────────────────────────────────────────────────────────
+let mapInitialized = false;
+let leafletMap = null;
+
+function initMap() {
+  if (mapInitialized) return;
+  mapInitialized = true;
+
+  // Load Leaflet
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+  document.head.appendChild(link);
+
+  const script = document.createElement('script');
+  script.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+  script.onload = () => {
+    leafletMap = L.map('map').setView([25.8, -80.2], 11);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(leafletMap);
+
+    // Biscayne Park marker
+    const bpIcon = L.divIcon({
+      html: '<div style="background:#2a6b6e;width:16px;height:16px;border-radius:50%;border:3px solid white;box-shadow:0 2px 6px rgba(0,0,0,0.4)"></div>',
+      iconSize: [16, 16], iconAnchor: [8, 8]
+    });
+    L.marker([BISCAYNE_PARK.lat, BISCAYNE_PARK.lng], { icon: bpIcon })
+     .addTo(leafletMap)
+     .bindPopup('<strong>📍 Biscayne Park</strong><br>Your reference point');
+
+    // Place markers
+    const colorMap = {
+      "Cuban & Latin": "#c0674a",
+      "Pizza": "#8b3a22",
+      "Bakery & Pastry": "#c9a84c",
+      "Coffee": "#6b4c30",
+      "Bars & Cocktails": "#2a6b6e",
+      "Seafood & Grill": "#1e5052",
+      "Markets & Specialty": "#5a7a3a",
+    };
+
+    PLACES.forEach(p => {
+      const color = colorMap[p.cat] || '#888';
+      const dist = haversine(BISCAYNE_PARK.lat, BISCAYNE_PARK.lng, p.lat, p.lng).toFixed(1);
+      const icon = L.divIcon({
+        html: `<div style="background:${color};width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.4)"></div>`,
+        iconSize: [12, 12], iconAnchor: [6, 6]
+      });
+      L.marker([p.lat, p.lng], { icon })
+       .addTo(leafletMap)
+       .bindPopup(`
+         <strong>${p.name}</strong><br>
+         <span style="color:#888;font-size:0.8em">${p.cat}</span><br>
+         ★ ${p.rating} · ${p.price || '—'}<br>
+         📏 ${dist} mi from Biscayne Park<br>
+         <em style="font-size:0.8em">${p.address}</em>
+       `);
+    });
+
+    // Legend
+    const legendEl = document.getElementById('map-legend');
+    legendEl.innerHTML = '<span style="font-size:0.82rem;font-weight:600;color:#1a1814;margin-right:8px">Categories:</span>' +
+      Object.entries(colorMap).map(([cat, color]) =>
+        `<div class="legend-item"><div class="legend-dot" style="background:${color}"></div>${CATEGORIES[cat].icon} ${cat}</div>`
+      ).join('') +
+      `<div class="legend-item"><div class="legend-dot" style="background:#2a6b6e"></div>📍 Biscayne Park</div>`;
+  };
+  document.head.appendChild(script);
+}
+
+function showView(v) {
+  currentView = v;
+  document.getElementById('btn-list').classList.toggle('active', v === 'list');
+  document.getElementById('btn-map').classList.toggle('active', v === 'map');
+  document.getElementById('list-view').classList.toggle('hidden', v !== 'list');
+  document.getElementById('map-view').classList.toggle('active', v === 'map');
+  if (v === 'map') initMap();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+renderList();
+</script>
+
+</body>
+</html>
